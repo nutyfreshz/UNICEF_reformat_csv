@@ -15,7 +15,7 @@ def reset_state():
 
 uploaded_file = st.file_uploader("Upload your CSV file", type="csv")
 
-# ❗ Detect file change or file removed → reset
+# Detect file change or removal → reset
 current_file_name = uploaded_file.name if uploaded_file is not None else None
 if current_file_name != st.session_state.last_file:
     reset_state()
@@ -28,17 +28,16 @@ if uploaded_file is not None:
     st.dataframe(df.head())
     
     st.subheader("2. Output CSV Re-formatting")
-    #######################
-    ## Manipulate data here - Use df_rev as output ##
-    df_rev = df.iloc[:, :2]
-    #######################
 
-    # Convert to CSV
+    # Manipulate output here
+    df_rev = df.iloc[:, :2]
+
+    # Convert to UTF-8-SIG CSV
     csv_buffer = StringIO()
     df_rev.to_csv(csv_buffer, index=False, encoding="utf-8-sig")
     csv_data = csv_buffer.getvalue()
 
-    # Text input — must press ENTER for on_change to fire
+    # Text box (Enter needed to activate)
     op_names = st.text_input(
         "Enter output file name",
         placeholder="my_output",
@@ -46,12 +45,12 @@ if uploaded_file is not None:
         on_change=lambda: setattr(st.session_state, "name_entered", True)
     )
 
-    # Show button only after ENTER is pressed
+    # Show download button only after Enter
     if st.session_state.name_entered:
         name = op_names.strip() or "my_output"
         st.download_button(
             label="Download Reformatted CSV",
-            data=df_rev.encode("utf-8-sig"),
+            data=csv_data.encode("utf-8-sig"),   # FIXED
             file_name=f"{name}.csv",
             mime="text/csv"
         )
