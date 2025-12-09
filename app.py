@@ -34,14 +34,22 @@ from io import StringIO
 
 st.title("CSV Reformatter")
 
-uploaded_file = st.file_uploader("Upload your CSV file", type="csv")
-
-# initialize session state flag
+# Track last uploaded file name
+if "last_file" not in st.session_state:
+    st.session_state.last_file = None
 if "name_entered" not in st.session_state:
     st.session_state.name_entered = False
 
-def enable_download():
-    st.session_state.name_entered = True
+def reset_state():
+    st.session_state.name_entered = False
+
+uploaded_file = st.file_uploader("Upload your CSV file", type="csv")
+
+# ❗ Detect file change or file removed → reset
+current_file_name = uploaded_file.name if uploaded_file is not None else None
+if current_file_name != st.session_state.last_file:
+    reset_state()
+    st.session_state.last_file = current_file_name
 
 if uploaded_file is not None:
     st.subheader("1. Upload CSV")
@@ -62,10 +70,10 @@ if uploaded_file is not None:
         "Enter output file name",
         placeholder="my_output",
         key="filename_input",
-        on_change=enable_download
+        on_change=lambda: setattr(st.session_state, "name_entered", True)
     )
 
-    # Show button only after pressing Enter
+    # Show button only after ENTER is pressed
     if st.session_state.name_entered:
         name = op_names.strip() or "my_output"
         st.download_button(
@@ -74,3 +82,5 @@ if uploaded_file is not None:
             file_name=f"{name}.csv",
             mime="text/csv"
         )
+else:
+    st.info("Please upload a CSV file to continue.")
