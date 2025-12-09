@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from io import StringIO
+from io import BytesIO
 
 st.title("CSV Reformatter")
 
@@ -32,10 +32,10 @@ if uploaded_file is not None:
     # Manipulate output here
     df_rev = df.iloc[:, :2]
 
-    # Convert to UTF-8-SIG CSV
-    csv_buffer = StringIO()
+    # Convert to UTF-8-SIG using BytesIO (CRITICAL FIX)
+    csv_buffer = BytesIO()
     df_rev.to_csv(csv_buffer, index=False, encoding="utf-8-sig")
-    csv_data = csv_buffer.getvalue()
+    csv_buffer.seek(0)  # reset pointer
 
     # Text box (Enter needed to activate)
     op_names = st.text_input(
@@ -50,9 +50,9 @@ if uploaded_file is not None:
         name = op_names.strip() or "my_output"
         st.download_button(
             label="Download Reformatted CSV",
-            data=csv_data.encode("utf-8-sig"),   # FIXED
+            data=csv_buffer,           # BytesIO works 100%
             file_name=f"{name}.csv",
-            mime="text/csv"
+            mime="text/csv",
         )
 else:
     st.info("Please upload a CSV file to continue.")
