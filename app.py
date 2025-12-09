@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from io import StringIO
 
 st.title("CSV Reformatter")
 
@@ -12,16 +13,16 @@ if uploaded_file is not None:
     st.dataframe(df.head())
     
     st.subheader("2. Output CSV Re-formatting")
-    df_rev = df.iloc[:,:2]
+    df_rev = df.iloc[:, :2]   # first 2 columns only
 
-    output_files = df_rev
-    st.write(file)
-        st.download_button(
-            label=f"Download {file}",
-            data=open(file, "rb").read(),
-            file_name=file,
-            mime="text/csv"
-        )
+    # Convert df_rev to CSV in memory (no temporary files)
+    csv_buffer = StringIO()
+    df_rev.to_csv(csv_buffer, index=False)
+    csv_data = csv_buffer.getvalue()
 
-# else:
-#     st.info("Please upload a CSV file to continue.")
+    st.download_button(
+        label="Download Reformatted CSV",
+        data=csv_data,
+        file_name="reformatted.csv",
+        mime="text/csv"
+    )
