@@ -35,7 +35,7 @@ if uploaded_file is not None:
 
     # Convert to CSV
     csv_buffer = StringIO()
-    df_rev.to_csv(csv_buffer, index=False, encoding="utf-8")
+    df_rev.to_csv(csv_buffer, index=False, encoding="utf-8-sig")
     csv_data = csv_buffer.getvalue()
 
     # Text input — must press ENTER for on_change to fire
