@@ -51,7 +51,7 @@ if uploaded_file is not None:
         name = op_names.strip() or "my_output"
         st.download_button(
             label="Download Reformatted CSV",
-            data=csv.encode("utf-8-sig"),
+            data=df_rev.encode("utf-8-sig"),
             file_name=f"{name}.csv",
             mime="text/csv"
         )
