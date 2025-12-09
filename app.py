@@ -20,7 +20,7 @@ if uploaded_file is not None:
     df_rev.to_csv(csv_buffer, index=False)
     csv_data = csv_buffer.getvalue()
 
-    op_names = st.text_input("Enter output file name", value="Enter name")
+    op_names = st.text_input("Enter output file name", value="")
     st.download_button(
         label="Download Reformat CSV",
         data=csv_data,
