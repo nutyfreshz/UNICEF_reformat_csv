@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from io import BytesIO
 
-st.title("CSV Reformatter")
+st.title("e-Donation CSV Reformatter")
 
 # Track last uploaded file name
 if "last_file" not in st.session_state:
