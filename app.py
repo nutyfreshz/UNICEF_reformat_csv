@@ -29,7 +29,7 @@ GROUP BY
     c.[Tax ID], 
     o.[Close Date], 
     o.[Donation ID];
-
+""")
 
 # Track last uploaded file name
 if "last_file" not in st.session_state:
