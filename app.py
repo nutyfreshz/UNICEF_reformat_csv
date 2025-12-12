@@ -73,6 +73,7 @@ if uploaded_file is not None:
     df['ประเภทผู้บริจาค'] = 'waiting dev'
     df['ชื่อนิติบุคคล'] = 'waiting dev'
     df_rev = df[['วันที่รับบริจาค','ประเภทผู้บริจาค','เลขประจำตัวผู้เสียภาษีอากร','คำนำหน้าชื่อ','ชื่อ','นามสกุล','ชื่อนิติบุคคล','มูลค่าเงินสด','รายการทรัพย์สิน','มูลค่าทรัพย์สิน']]
+    st.write(f"Rows: {df_rev.shape[0]}, Columns: {df_rev.shape[1]}")
     st.dataframe(df_rev.head())
 
     # Convert to UTF-8-SIG using BytesIO (CRITICAL FIX)
