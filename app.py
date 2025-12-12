@@ -5,6 +5,7 @@ from io import BytesIO
 
 st.title("e-Donation CSV Reformatter")
 st.markdown("""
+SQL for query this input data in Data Warehouse
 ```sql
 SELECT 
     c.[CRM Contact ID], 
