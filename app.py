@@ -4,6 +4,32 @@ import numpy as np
 from io import BytesIO
 
 st.title("e-Donation CSV Reformatter")
+st.markdown("""
+```sql
+SELECT 
+    c.[CRM Contact ID], 
+    c.[Supporter ID], 
+    c.Title, 
+    c.[First Name], 
+    c.[Last Name], 
+    c.[Tax ID], 
+    FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
+    o.[Donation ID], 
+    SUM(o.Amount) AS total_donation_amount
+FROM sfs.vw_contact c
+LEFT JOIN sfs.vw_opportunity o
+    ON c.[CRM Contact ID] = o.[CRM Contact ID]
+WHERE o.[Close Date] >= '2025-01-01'
+GROUP BY 
+    c.[CRM Contact ID], 
+    c.[Supporter ID], 
+    c.Title, 
+    c.[First Name], 
+    c.[Last Name], 
+    c.[Tax ID], 
+    o.[Close Date], 
+    o.[Donation ID];
+
 
 # Track last uploaded file name
 if "last_file" not in st.session_state:
@@ -23,7 +49,7 @@ if current_file_name != st.session_state.last_file:
     st.session_state.last_file = current_file_name
 
 if uploaded_file is not None:
-    st.subheader("1. Upload CSV")
+    st.subheader("1. Upload CSV Example")
     df = pd.read_csv(uploaded_file)
     st.write(f"Rows: {df.shape[0]}, Columns: {df.shape[1]}")
     st.dataframe(df.head())
@@ -55,7 +81,7 @@ if uploaded_file is not None:
 
     # Text box (Enter needed to activate)
     op_names = st.text_input(
-        "Enter output file name",
+        "Enter output file name: e.g. inputDonatefile-25681204",
         placeholder="my_output",
         key="filename_input",
         on_change=lambda: setattr(st.session_state, "name_entered", True)
