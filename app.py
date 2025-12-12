@@ -30,7 +30,22 @@ if uploaded_file is not None:
     st.subheader("2. Output CSV Re-formatting")
 
     # Manipulate output here
-    df_rev = df.iloc[:, :2]
+    df['CloseDate'] = pd.to_datetime(df['CloseDate'], errors='coerce')
+    df['วันที่รับบริจาค'] = df['CloseDate'].apply(
+        lambda x: f"{x.day:02d}{x.month:02d}{x.year + 543}" if pd.notnull(x) else None)
+    df = df.rename(columns={'Tax ID': 'เลขประจำตัวผู้เสียภาษีอากร'
+                            ,'Title': 'คำนำหน้าชื่อ'
+                            , 'First Name': 'ชื่อ'
+                            , 'Last Name': 'นามสกุล'
+                            , 'total_donation_amount': 'มูลค่าเงินสด'
+                    })
+    df['รายการทรัพย์สิน'] = np.nan
+    df['มูลค่าทรัพย์สิน'] = np.nan
+    
+    df['ประเภทผู้บริจาค'] = 'waiting dev'
+    df['ชื่อนิติบุคคล'] = 'waiting dev'
+    df_rev = df[['วันที่รับบริจาค','ประเภทผู้บริจาค','เลขประจำตัวผู้เสียภาษีอากร','คำนำหน้าชื่อ','ชื่อ','นามสกุล','ชื่อนิติบุคคล','มูลค่าเงินสด','รายการทรัพย์สิน','มูลค่าทรัพย์สิน']]
+    df_rev
 
     # Convert to UTF-8-SIG using BytesIO (CRITICAL FIX)
     csv_buffer = BytesIO()
