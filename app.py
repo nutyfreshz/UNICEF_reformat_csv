@@ -66,20 +66,36 @@ if uploaded_file is not None:
                             , 'First Name': 'ชื่อ'
                             , 'Last Name': 'นามสกุล'
                             , 'total_donation_amount': 'มูลค่าเงินสด'
+                            , 'Donation ID': 'DONATION_ID'
                     })
     df['รายการทรัพย์สิน'] = np.nan
     df['มูลค่าทรัพย์สิน'] = np.nan
     
     df['ประเภทผู้บริจาค'] = 'waiting dev'
     df['ชื่อนิติบุคคล'] = 'waiting dev'
-    df_rev = df[['วันที่รับบริจาค','ประเภทผู้บริจาค','เลขประจำตัวผู้เสียภาษีอากร','คำนำหน้าชื่อ','ชื่อ','นามสกุล','ชื่อนิติบุคคล','มูลค่าเงินสด','รายการทรัพย์สิน','มูลค่าทรัพย์สิน']]
-    st.write(f"Rows: {df_rev.shape[0]}, Columns: {df_rev.shape[1]}")
-    st.dataframe(df_rev.head())
+    df_rev = df[['วันที่รับบริจาค','ประเภทผู้บริจาค','เลขประจำตัวผู้เสียภาษีอากร','คำนำหน้าชื่อ','ชื่อ','นามสกุล','ชื่อนิติบุคคล','มูลค่าเงินสด','รายการทรัพย์สิน','มูลค่าทรัพย์สิน','DONATION_ID']]
 
-    # Convert to UTF-8-SIG using BytesIO (CRITICAL FIX)
-    csv_buffer = BytesIO()
-    df_rev.to_csv(csv_buffer, index=False, encoding="utf-8-sig")
-    csv_buffer.seek(0)  # reset pointer
+    mask = (
+    df_rev['เลขประจำตัวผู้เสียภาษีอากร'].isna() |
+    df_rev['เลขประจำตัวผู้เสียภาษีอากร'].str.contains('xx', case=False, na=False)
+            )
+    df_rev_tax_incom = df_rev[mask]
+    df_rev_tax_com = df_rev[~mask]
+
+    # st.write(f"Total Rows: {df_rev.shape[0]}, Columns: {df_rev.shape[1]}")
+    st.write(f"Incomplete TaxID Rows: {df_rev_tax_incom.shape[0]}, Columns: {df_rev_tax_incom.shape[1]}")
+    st.write(f"Complete TaxID Rows: {df_rev_tax_com.shape[0]}, Columns: {df_rev_tax_com.shape[1]}")
+    # st.dataframe(df_rev.head())
+
+    # Create separate buffers
+    buffer_incomplete = BytesIO()
+    buffer_complete = BytesIO()
+
+    df_rev_tax_incom.to_csv(buffer_incomplete, index=False, encoding="utf-8-sig")
+    df_rev_tax_com.to_csv(buffer_complete, index=False, encoding="utf-8-sig")
+
+    buffer_incomplete.seek(0)
+    buffer_complete.seek(0)
 
     # Text box (Enter needed to activate)
     op_names = st.text_input(
@@ -92,11 +108,23 @@ if uploaded_file is not None:
     # Show download button only after Enter
     if st.session_state.name_entered:
         name = op_names.strip() or "my_output"
-        st.download_button(
-            label="Download Reformatted CSV",
-            data=csv_buffer,           # BytesIO works 100%
-            file_name=f"{name}.csv",
-            mime="text/csv",
-        )
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.download_button(
+                label="⬇️ Download Incomplete TaxID",
+                data=buffer_incomplete,
+                file_name=f"{name}_incomplete_taxid.csv",
+                mime="text/csv",
+            )
+
+        with col2:
+            st.download_button(
+                label="⬇️ Download Complete TaxID",
+                data=buffer_complete,
+                file_name=f"{name}_complete_taxid.csv",
+                mime="text/csv",
+            )
 else:
     st.info("Please upload a CSV file to continue.")
