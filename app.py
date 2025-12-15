@@ -82,12 +82,12 @@ if uploaded_file is not None:
     df_rev_tax_incom = df_rev[mask]
     df_rev_tax_com = df_rev[~mask]
 
-    tax_col = 'เลขประจำตัวผู้เสียภาษีอากร'
-    df_rev_tax_com[tax_col] = (
-        df_rev_tax_com[tax_col]
-        .astype(str)
-        .apply(lambda x: f"'{x}" if x != 'nan' else x)
-    )
+    # tax_col = 'เลขประจำตัวผู้เสียภาษีอากร'
+    # df_rev_tax_com[tax_col] = (
+    #     df_rev_tax_com[tax_col]
+    #     .astype(str)
+    #     .apply(lambda x: f"'{x}" if x != 'nan' else x)
+    # )
 
     # st.write(f"Total Rows: {df_rev.shape[0]}, Columns: {df_rev.shape[1]}")
     st.write(f"Incomplete TaxID - Rows: {df_rev_tax_incom.shape[0]}, Columns: {df_rev_tax_incom.shape[1]}")
