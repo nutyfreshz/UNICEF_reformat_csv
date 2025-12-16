@@ -34,7 +34,7 @@ GROUP BY
 """)
 
 st.markdown("""
-SQL: For exclude donatiuon_id which "REFUND"
+SQL: For exclude donation_id which "REFUND"
 ```sql
 SELECT 
     c.[CRM Contact ID], 
