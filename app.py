@@ -5,7 +5,7 @@ from io import BytesIO
 
 st.title("e-Donation CSV Reformatter")
 st.markdown("""
-SQL for query this input data in Data Warehouse
+SQL: For query input data in Data Warehouse
 ```sql
 SELECT 
     c.[CRM Contact ID], 
@@ -20,7 +20,37 @@ SELECT
 FROM sfs.vw_contact c
 LEFT JOIN sfs.vw_opportunity o
     ON c.[CRM Contact ID] = o.[CRM Contact ID]
-WHERE o.[Close Date] >= '2025-01-01'
+WHERE YEAR(o.[Close Date]) >= YEAR(GETDATE())
+    AND LOWER(o.Stage) = 'close won'
+GROUP BY 
+    c.[CRM Contact ID], 
+    c.[Supporter ID], 
+    c.Title, 
+    c.[First Name], 
+    c.[Last Name], 
+    c.[Tax ID], 
+    o.[Close Date], 
+    o.[Donation ID];
+""")
+
+st.markdown("""
+SQL: For exclude donatiuon_id which "REFUND"
+```sql
+SELECT 
+    c.[CRM Contact ID], 
+    c.[Supporter ID], 
+    c.Title, 
+    c.[First Name], 
+    c.[Last Name], 
+    c.[Tax ID], 
+    FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
+    o.[Donation ID], 
+    SUM(o.Amount) AS total_donation_amount
+FROM sfs.vw_contact c
+LEFT JOIN sfs.vw_opportunity o
+    ON c.[CRM Contact ID] = o.[CRM Contact ID]
+WHERE YEAR(o.[Close Date]) >= YEAR(GETDATE())
+    /*AND LOWER(o.Stage) like '%refund%'*/
 GROUP BY 
     c.[CRM Contact ID], 
     c.[Supporter ID], 
