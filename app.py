@@ -15,13 +15,14 @@ SELECT
     c.[Last Name], 
     c.[Tax ID], 
     FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
-    o.[Donation ID], 
+    o.[Donation ID],
+	c.[Type of Account],
     SUM(o.Amount) AS total_donation_amount
 FROM sfs.vw_contact c
 LEFT JOIN sfs.vw_opportunity o
     ON c.[CRM Contact ID] = o.[CRM Contact ID]
 WHERE YEAR(o.[Close Date]) >= YEAR(GETDATE())
-    AND LOWER(o.Stage) = 'close won'
+    AND LOWER(o.Stage) = 'closed won'
 GROUP BY 
     c.[CRM Contact ID], 
     c.[Supporter ID], 
@@ -30,7 +31,8 @@ GROUP BY
     c.[Last Name], 
     c.[Tax ID], 
     o.[Close Date], 
-    o.[Donation ID];
+    o.[Donation ID],
+	c.[Type of Account];
 """)
 
 st.markdown("""
@@ -44,13 +46,14 @@ SELECT
     c.[Last Name], 
     c.[Tax ID], 
     FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
-    o.[Donation ID], 
+    o.[Donation ID],
+	o.stage,
     SUM(o.Amount) AS total_donation_amount
 FROM sfs.vw_contact c
 LEFT JOIN sfs.vw_opportunity o
     ON c.[CRM Contact ID] = o.[CRM Contact ID]
 WHERE YEAR(o.[Close Date]) >= YEAR(GETDATE())
-    /*AND LOWER(o.Stage) like '%refund%'*/
+    AND LOWER(o.Stage) like '%refund%'
 GROUP BY 
     c.[CRM Contact ID], 
     c.[Supporter ID], 
@@ -59,7 +62,8 @@ GROUP BY
     c.[Last Name], 
     c.[Tax ID], 
     o.[Close Date], 
-    o.[Donation ID];
+    o.[Donation ID],
+	o.Stage;
 """)
 
 # Track last uploaded file name
