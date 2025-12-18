@@ -16,7 +16,7 @@ SELECT
     COALESCE(c.[Tax ID],'xx') as "Tax ID", 
     FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
     o.[Donation ID],
-	c.[Type of Account],
+    c.[Type of Account],
     CASE WHEN lower(c.[Type of Account]) = 'individual' THEN '1'
         WHEN lower(c.[Type of Account]) = 'organization' THEN '2'
     ELSE 'ERROR' END AS type_acc_id,
