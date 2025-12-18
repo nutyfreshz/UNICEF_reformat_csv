@@ -17,10 +17,13 @@ SELECT
     FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
     o.[Donation ID],
 	c.[Type of Account],
+    CASE WHEN lower(c.[Type of Account]) = 'individual' THEN '1'
+        WHEN lower(c.[Type of Account]) = 'organization' THEN '2'
+    ELSE 'ERROR' END AS type_acc_id,
     SUM(o.Amount) AS total_donation_amount
-FROM sfs.vw_contact c
-LEFT JOIN sfs.vw_opportunity o
-    ON c.[CRM Contact ID] = o.[CRM Contact ID]
+FROM sfs.vw_opportunity o
+LEFT JOIN sfs.vw_contact c
+    ON o.[CRM Contact ID] = c.[CRM Contact ID]
 WHERE YEAR(o.[Close Date]) >= YEAR(GETDATE())
     AND LOWER(o.Stage) = 'closed won'
 GROUP BY 
@@ -95,6 +98,17 @@ if uploaded_file is not None:
     df['CloseDate'] = pd.to_datetime(df['CloseDate'], errors='coerce')
     df['วันที่รับบริจาค'] = df['CloseDate'].apply(
         lambda x: f"{x.day:02d}{x.month:02d}{x.year + 543}" if pd.notnull(x) else None)
+
+    df['รายการทรัพย์สิน'] = np.nan
+    df['มูลค่าทรัพย์สิน'] = np.nan
+
+    df['ประเภทผู้บริจาค'] = df['type_acc_id']
+    df['ชื่อนิติบุคคล'] = np.where(
+                                df['type_acc_id'] == '2',
+                                df['Last Name'],
+                                np.nan
+                                )
+
     df = df.rename(columns={'Tax ID': 'เลขประจำตัวผู้เสียภาษีอากร'
                             ,'Title': 'คำนำหน้าชื่อ'
                             , 'First Name': 'ชื่อ'
@@ -102,11 +116,7 @@ if uploaded_file is not None:
                             , 'total_donation_amount': 'มูลค่าเงินสด'
                             , 'Donation ID': 'DONATION_ID'
                     })
-    df['รายการทรัพย์สิน'] = np.nan
-    df['มูลค่าทรัพย์สิน'] = np.nan
-    
-    df['ประเภทผู้บริจาค'] = 'waiting dev'
-    df['ชื่อนิติบุคคล'] = 'waiting dev'
+
     df_rev = df[['วันที่รับบริจาค','ประเภทผู้บริจาค','เลขประจำตัวผู้เสียภาษีอากร','คำนำหน้าชื่อ','ชื่อ','นามสกุล','ชื่อนิติบุคคล','มูลค่าเงินสด','รายการทรัพย์สิน','มูลค่าทรัพย์สิน','DONATION_ID']]
 
     mask = (
