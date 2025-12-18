@@ -16,7 +16,7 @@ SELECT
     c.[Tax ID], 
     FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
     o.[Donation ID],
-	c.[Type of Account],
+    c.[Type of Account],
     CASE WHEN lower(c.[Type of Account]) = 'individual' THEN '1'
         WHEN lower(c.[Type of Account]) = 'organization' THEN '2'
     ELSE 'ERROR' END AS type_acc_id,
@@ -50,7 +50,7 @@ SELECT
     c.[Tax ID], 
     FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
     o.[Donation ID],
-	o.stage,
+    o.stage,
     SUM(o.Amount) AS total_donation_amount
 FROM sfs.vw_contact c
 LEFT JOIN sfs.vw_opportunity o
