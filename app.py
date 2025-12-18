@@ -35,7 +35,7 @@ GROUP BY
     c.[Tax ID], 
     o.[Close Date], 
     o.[Donation ID],
-	c.[Type of Account];
+    c.[Type of Account];
 """)
 
 st.markdown("""
@@ -66,7 +66,7 @@ GROUP BY
     c.[Tax ID], 
     o.[Close Date], 
     o.[Donation ID],
-	o.Stage;
+    o.Stage;
 """)
 
 # Track last uploaded file name
