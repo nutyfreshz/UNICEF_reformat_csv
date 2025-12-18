@@ -108,7 +108,8 @@ if uploaded_file is not None:
                                 df['Last Name'],
                                 np.nan
                                 )
-
+	df['Tax ID'] = df['Tax ID'].astype(str)
+	
     df = df.rename(columns={'Tax ID': 'เลขประจำตัวผู้เสียภาษีอากร'
                             ,'Title': 'คำนำหน้าชื่อ'
                             , 'First Name': 'ชื่อ'
