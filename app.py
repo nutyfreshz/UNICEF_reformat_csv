@@ -149,8 +149,8 @@ if uploaded_file is not None:
     buffer_complete.seek(0)
 
     # Text box (Enter needed to activate)
-	st.badge("Example file naming")
-	st.badge("inputDonatefile-25681204", icon=":material/check:", color="green")
+    st.badge("Example file naming")
+    st.badge("inputDonatefile-25681204", icon=":material/check:", color="green")
     op_names = st.text_input(
         "Enter output file name",
         placeholder="my_output",
