@@ -150,12 +150,12 @@ if uploaded_file is not None:
 
     # Text box (Enter needed to activate)
     op_names = st.text_input(
-        "Enter output file name: e.g. inputDonatefile-25681204",
+        "Enter output file name: e.g. ",
         placeholder="my_output",
         key="filename_input",
         on_change=lambda: setattr(st.session_state, "name_entered", True)
     )
-
+    st.badge("inputDonatefile-25681204", icon=":material/check:", color="green")
     # Show download button only after Enter
     if st.session_state.name_entered:
         name = op_names.strip() or "my_output"
