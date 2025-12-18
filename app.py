@@ -95,31 +95,31 @@ if uploaded_file is not None:
     st.subheader("2. Output CSV Re-formatting")
 
     # Manipulate output here
-	df['CloseDate'] = pd.to_datetime(df['CloseDate'], errors='coerce')
-	df['วันที่รับบริจาค'] = df['CloseDate'].apply(
+    df['CloseDate'] = pd.to_datetime(df['CloseDate'], errors='coerce')
+    df['วันที่รับบริจาค'] = df['CloseDate'].apply(
 	    lambda x: f"{x.day:02d}{x.month:02d}{x.year + 543}" if pd.notnull(x) else None)
-	
-	df['รายการทรัพย์สิน'] = np.nan
-	df['มูลค่าทรัพย์สิน'] = np.nan
-	
-	df['ประเภทผู้บริจาค'] = df['type_acc_id']
-	df['ชื่อนิติบุคคล'] = np.where(
-	                            df['type_acc_id'] == '2',
-	                            df['Last Name'],
-	                            np.nan
-	                            )
-	
-	df['Tax ID'] = df['Tax ID'].astype(str)
-	
-	df = df.rename(columns={'Tax ID': 'เลขประจำตัวผู้เสียภาษีอากร'
-	                        ,'Title': 'คำนำหน้าชื่อ'
-	                        , 'First Name': 'ชื่อ'
-	                        , 'Last Name': 'นามสกุล'
-	                        , 'total_donation_amount': 'มูลค่าเงินสด'
-	                        , 'Donation ID': 'DONATION_ID'
-	                })
-	
-	df_rev = df[['วันที่รับบริจาค','ประเภทผู้บริจาค','เลขประจำตัวผู้เสียภาษีอากร','คำนำหน้าชื่อ','ชื่อ','นามสกุล','ชื่อนิติบุคคล','มูลค่าเงินสด','รายการทรัพย์สิน','มูลค่าทรัพย์สิน','DONATION_ID']]
+
+    df['รายการทรัพย์สิน'] = np.nan
+    df['มูลค่าทรัพย์สิน'] = np.nan
+
+    df['ประเภทผู้บริจาค'] = df['type_acc_id']
+    df['ชื่อนิติบุคคล'] = np.where(
+							df['type_acc_id'] == '2',
+							df['Last Name'],
+							np.nan
+							)
+
+    df['Tax ID'] = df['Tax ID'].astype(str)
+
+    df = df.rename(columns={'Tax ID': 'เลขประจำตัวผู้เสียภาษีอากร'
+						,'Title': 'คำนำหน้าชื่อ'
+						, 'First Name': 'ชื่อ'
+						, 'Last Name': 'นามสกุล'
+						, 'total_donation_amount': 'มูลค่าเงินสด'
+						, 'Donation ID': 'DONATION_ID'
+				})
+
+    df_rev = df[['วันที่รับบริจาค','ประเภทผู้บริจาค','เลขประจำตัวผู้เสียภาษีอากร','คำนำหน้าชื่อ','ชื่อ','นามสกุล','ชื่อนิติบุคคล','มูลค่าเงินสด','รายการทรัพย์สิน','มูลค่าทรัพย์สิน','DONATION_ID']]
 
     mask = (
     df_rev['เลขประจำตัวผู้เสียภาษีอากร'].isna() |
