@@ -47,7 +47,7 @@ SELECT
     c.Title, 
     c.[First Name], 
     c.[Last Name], 
-    c.[Tax ID], 
+    COALESCE(c.[Tax ID],'xx') as "Tax ID", 
     FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
     o.[Donation ID],
     o.stage,
