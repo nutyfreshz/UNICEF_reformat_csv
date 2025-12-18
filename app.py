@@ -108,7 +108,8 @@ if uploaded_file is not None:
 							df['Last Name'],
 							np.nan
 							)
-
+    df['Tax ID'] = df['Tax ID'].astype(str)
+    
     df = df.rename(columns={'Tax ID': 'เลขประจำตัวผู้เสียภาษีอากร'
 						,'Title': 'คำนำหน้าชื่อ'
 						, 'First Name': 'ชื่อ'
@@ -116,7 +117,7 @@ if uploaded_file is not None:
 						, 'total_donation_amount': 'มูลค่าเงินสด'
 						, 'Donation ID': 'DONATION_ID'
 				})
-
+    
     df_rev = df[['วันที่รับบริจาค','ประเภทผู้บริจาค','เลขประจำตัวผู้เสียภาษีอากร','คำนำหน้าชื่อ','ชื่อ','นามสกุล','ชื่อนิติบุคคล','มูลค่าเงินสด','รายการทรัพย์สิน','มูลค่าทรัพย์สิน','DONATION_ID']]
 
     mask = (
