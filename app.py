@@ -7,16 +7,16 @@ st.title("e-Donation CSV Reformatter")
 st.markdown("""
 SQL: For query input data in Data Warehouse
 ```sql
-SELECT 
+SELECT
     c.[CRM Contact ID], 
     c.[Supporter ID], 
     c.Title, 
     c.[First Name], 
     c.[Last Name], 
-    c.[Tax ID], 
+    COALESCE(c.[Tax ID],'xx') as "Tax ID", 
     FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
     o.[Donation ID],
-    c.[Type of Account],
+	c.[Type of Account],
     CASE WHEN lower(c.[Type of Account]) = 'individual' THEN '1'
         WHEN lower(c.[Type of Account]) = 'organization' THEN '2'
     ELSE 'ERROR' END AS type_acc_id,
