@@ -102,8 +102,13 @@ if uploaded_file is not None:
         errors='coerce'
         )
 
-    df['วันที่รับบริจาค'] = df['CloseDate'].apply(
-	    lambda x: f"{x.day:02d}{x.month:02d}{x.year + 543}" if pd.notnull(x) else None)
+    # df['วันที่รับบริจาค'] = df['CloseDate'].apply(
+	    # lambda x: f"{x.day:02d}{x.month:02d}{x.year + 543}" if pd.notnull(x) else None)
+	df['วันที่รับบริจาค'] = df['CloseDate'].apply(
+    lambda x: f"{x.month:02d}{x.day:02d}{x.year + 543}"
+    if pd.notnull(x) else None
+    )
+
 
     df['รายการทรัพย์สิน'] = np.nan
     df['มูลค่าทรัพย์สิน'] = np.nan
