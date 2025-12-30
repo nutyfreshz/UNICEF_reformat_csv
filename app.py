@@ -26,6 +26,7 @@ FROM sfs.vw_opportunity o
 LEFT JOIN sfs.vw_contact c
     ON o.[CRM Contact ID] = c.[CRM Contact ID]
 WHERE YEAR(o.[Close Date]) >= YEAR(GETDATE())
+	AND MONTH(o.[Close Date]) >= MOTH(GETDATE())
     AND (LOWER(o.Stage) = 'closed won'
 		OR LOWER(o.Stage) like '%refund%')
 GROUP BY 
@@ -40,36 +41,36 @@ GROUP BY
     c.[Type of Account];
 """)
 
-st.markdown("""
-SQL: For exclude donation_id which "REFUND"
-```sql
-SELECT 
-    c.[CRM Contact ID], 
-    c.[Supporter ID], 
-    c.Title, 
-    c.[First Name], 
-    c.[Last Name], 
-    COALESCE(c.[Tax ID],'xx') as "Tax ID", 
-    FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
-    o.[Donation ID],
-    o.stage,
-    SUM(o.Amount) AS total_donation_amount
-FROM sfs.vw_contact c
-LEFT JOIN sfs.vw_opportunity o
-    ON c.[CRM Contact ID] = o.[CRM Contact ID]
-WHERE YEAR(o.[Close Date]) >= YEAR(GETDATE())
-    AND LOWER(o.Stage) like '%refund%'
-GROUP BY 
-    c.[CRM Contact ID], 
-    c.[Supporter ID], 
-    c.Title, 
-    c.[First Name], 
-    c.[Last Name], 
-    c.[Tax ID], 
-    o.[Close Date], 
-    o.[Donation ID],
-    o.Stage;
-""")
+# st.markdown("""
+# SQL: For exclude donation_id which "REFUND"
+# ```sql
+# SELECT 
+#     c.[CRM Contact ID], 
+#     c.[Supporter ID], 
+#     c.Title, 
+#     c.[First Name], 
+#     c.[Last Name], 
+#     COALESCE(c.[Tax ID],'xx') as "Tax ID", 
+#     FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
+#     o.[Donation ID],
+#     o.stage,
+#     SUM(o.Amount) AS total_donation_amount
+# FROM sfs.vw_contact c
+# LEFT JOIN sfs.vw_opportunity o
+#     ON c.[CRM Contact ID] = o.[CRM Contact ID]
+# WHERE YEAR(o.[Close Date]) >= YEAR(GETDATE())
+#     AND LOWER(o.Stage) like '%refund%'
+# GROUP BY 
+#     c.[CRM Contact ID], 
+#     c.[Supporter ID], 
+#     c.Title, 
+#     c.[First Name], 
+#     c.[Last Name], 
+#     c.[Tax ID], 
+#     o.[Close Date], 
+#     o.[Donation ID],
+#     o.Stage;
+# """)
 
 # Track last uploaded file name
 if "last_file" not in st.session_state:
