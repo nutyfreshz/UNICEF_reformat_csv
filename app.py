@@ -25,7 +25,8 @@ FROM sfs.vw_opportunity o
 LEFT JOIN sfs.vw_contact c
     ON o.[CRM Contact ID] = c.[CRM Contact ID]
 WHERE YEAR(o.[Close Date]) >= YEAR(GETDATE())
-    AND LOWER(o.Stage) = 'closed won'
+    AND (LOWER(o.Stage) = 'closed won'
+		OR LOWER(o.Stage) like '%refund%')
 GROUP BY 
     c.[CRM Contact ID], 
     c.[Supporter ID], 
@@ -98,17 +99,14 @@ if uploaded_file is not None:
     # df['CloseDate'] = pd.to_datetime(df['CloseDate'], errors='coerce')
     df['CloseDate'] = pd.to_datetime(
         df['CloseDate'],
-        format='%d/%m/%Y',
-        errors='coerce'
+        errors='coerce',
+        infer_datetime_format=True,
+        dayfirst=True
         )
 
-    # df['วันที่รับบริจาค'] = df['CloseDate'].apply(
-	    # lambda x: f"{x.day:02d}{x.month:02d}{x.year + 543}" if pd.notnull(x) else None)
-	df['วันที่รับบริจาค'] = df['CloseDate'].apply(
-    lambda x: f"{x.month:02d}{x.day:02d}{x.year + 543}"
-    if pd.notnull(x) else None
-    )
-
+    df['วันที่รับบริจาค'] = df['CloseDate'].apply(
+        lambda x: f"{x.day:02d}{x.month:02d}{x.year + 543}" if pd.notnull(x) else None
+        )
 
     df['รายการทรัพย์สิน'] = np.nan
     df['มูลค่าทรัพย์สิน'] = np.nan
