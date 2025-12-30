@@ -96,11 +96,12 @@ if uploaded_file is not None:
 
     # Manipulate output here
     # df['CloseDate'] = pd.to_datetime(df['CloseDate'], errors='coerce')
-	df['CloseDate'] = pd.to_datetime(
+    df['CloseDate'] = pd.to_datetime(
         df['CloseDate'],
-        errors='coerce',
-        dayfirst=True
+        format='%d/%m/%Y',
+        errors='coerce'
         )
+
     df['วันที่รับบริจาค'] = df['CloseDate'].apply(
 	    lambda x: f"{x.day:02d}{x.month:02d}{x.year + 543}" if pd.notnull(x) else None)
 
