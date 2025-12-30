@@ -18,6 +18,7 @@ SELECT
     FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
     o.[Donation ID],
     c.[Type of Account],
+	o.Stage,
     CASE WHEN lower(c.[Type of Account]) = 'individual' THEN '1'
         WHEN lower(c.[Type of Account]) = 'organization' THEN '2'
     ELSE 'ERROR' END AS type_acc_id,
@@ -38,7 +39,8 @@ GROUP BY
     c.[Tax ID], 
     o.[Close Date], 
     o.[Donation ID],
-    c.[Type of Account];
+    c.[Type of Account],
+	o.Stage;
 """)
 
 # st.markdown("""
@@ -129,7 +131,7 @@ if uploaded_file is not None:
 						, 'Donation ID': 'DONATION_ID'
 				})
     
-    df_rev = df[['วันที่รับบริจาค','ประเภทผู้บริจาค','เลขประจำตัวผู้เสียภาษีอากร','คำนำหน้าชื่อ','ชื่อ','นามสกุล','ชื่อนิติบุคคล','มูลค่าเงินสด','รายการทรัพย์สิน','มูลค่าทรัพย์สิน','DONATION_ID']]
+    df_rev = df[['วันที่รับบริจาค','ประเภทผู้บริจาค','เลขประจำตัวผู้เสียภาษีอากร','คำนำหน้าชื่อ','ชื่อ','นามสกุล','ชื่อนิติบุคคล','มูลค่าเงินสด','รายการทรัพย์สิน','มูลค่าทรัพย์สิน','DONATION_ID','Stage']]
 
     mask = (
     df_rev['เลขประจำตัวผู้เสียภาษีอากร'].isna() |
