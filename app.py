@@ -4,6 +4,7 @@ import numpy as np
 from io import BytesIO
 
 st.title("e-Donation CSV Reformatter")
+st.badge("PLEASE DON'T OPEN CSV FILE WITH EXCEL FROM DATA WAREHOUSE", icon=":material/check:", color="red")
 st.markdown("""
 SQL: For query input data in Data Warehouse
 ```sql
