@@ -27,7 +27,7 @@ FROM sfs.vw_opportunity o
 LEFT JOIN sfs.vw_contact c
     ON o.[CRM Contact ID] = c.[CRM Contact ID]
 WHERE YEAR(o.[Close Date]) >= YEAR(GETDATE())
-	AND MONTH(o.[Close Date]) >= MOTH(GETDATE())
+	AND MONTH(o.[Close Date]) >= MONTH(GETDATE())
     AND (LOWER(o.Stage) = 'closed won'
 		OR LOWER(o.Stage) like '%refund%')
 GROUP BY 
@@ -40,7 +40,7 @@ GROUP BY
     o.[Close Date], 
     o.[Donation ID],
     c.[Type of Account],
-	o.Stage;
+    o.Stage;
 """)
 
 # st.markdown("""
