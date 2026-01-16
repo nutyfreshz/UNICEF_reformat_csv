@@ -120,7 +120,7 @@ if uploaded_file is not None:
 
     df['ประเภทผู้บริจาค'] = df['type_acc_id']
     df['ชื่อนิติบุคคล'] = np.where(
-							df['type_acc_id'] == '2',
+							df['type_acc_id'] == 2,
 							df['Last Name'],
 							np.nan
 							)
