@@ -8,39 +8,42 @@ st.badge("PLEASE DON'T OPEN CSV FILE WITH EXCEL FROM DATA WAREHOUSE", icon=":mat
 st.markdown("""
 SQL: For query input data in Data Warehouse
 ```sql
-SELECT
-    c.[CRM Contact ID], 
-    c.[Supporter ID], 
-    c.Title, 
-    c.[First Name], 
-    c.[Last Name], 
-    COALESCE(c.[Tax ID],'xx') as "Tax ID", 
+WITH prep as
+(SELECT 
+    CASE WHEN o.[On Behalf Of] is null then o.[CRM Contact ID]
+         WHEN o.[On Behalf Of] is not null then o.[On Behalf Of]
+		 ELSE o.[CRM Contact ID] END as contact_key, /*DOBO rules can't use contact_id directly*/
     FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
     o.[Donation ID],
-    c.[Type of Account],
 	o.Stage,
-    CASE WHEN lower(c.[Type of Account]) = 'individual' THEN '1'
-        WHEN lower(c.[Type of Account]) = 'organization' THEN '2'
-    ELSE 'ERROR' END AS type_acc_id,
     SUM(o.Amount) AS total_donation_amount
 FROM sfs.vw_opportunity o
-LEFT JOIN sfs.vw_contact c
-    ON o.[CRM Contact ID] = c.[CRM Contact ID]
 WHERE YEAR(o.[Close Date]) >= YEAR(GETDATE())
 	AND MONTH(o.[Close Date]) >= MONTH(GETDATE())
     AND (LOWER(o.Stage) = 'closed won'
 		OR LOWER(o.Stage) like '%refund%')
 GROUP BY 
-    c.[CRM Contact ID], 
-    c.[Supporter ID], 
-    c.Title, 
-    c.[First Name], 
-    c.[Last Name], 
-    c.[Tax ID], 
+	CASE WHEN o.[On Behalf Of] is null then o.[CRM Contact ID]
+         WHEN o.[On Behalf Of] is not null then o.[On Behalf Of]
+		 ELSE o.[CRM Contact ID] END,
     o.[Close Date], 
     o.[Donation ID],
-    c.[Type of Account],
-    o.Stage;
+    o.Stage
+)	
+
+select c.[CRM Contact ID], c.[Supporter ID], c.Title
+    , c.[First Name], c.[Last Name]
+	, COALESCE(c.[Tax ID],'xx') as "Tax ID"
+	, p.CloseDate, p.[Donation ID]
+	, c.[Type of Account], p.Stage
+	, CASE WHEN lower(c.[Type of Account]) = 'individual' THEN '1'
+        WHEN lower(c.[Type of Account]) = 'organization' THEN '2'
+        ELSE 'ERROR' END AS type_acc_id
+	, p.total_donation_amount
+from prep p
+LEFT JOIN sfs.vw_contact c
+    ON p.contact_key = c.[CRM Contact ID]
+	;
 """)
 
 # st.markdown("""
