@@ -9,6 +9,7 @@ st.markdown("""
 SQL: For query input data in Data Warehouse
 ```sql
 WITH prep as
+(WITH prep as
 (SELECT 
     CASE WHEN o.[On Behalf Of] is null then o.[CRM Contact ID]
          WHEN o.[On Behalf Of] is not null then o.[On Behalf Of]
@@ -36,13 +37,15 @@ select c.[CRM Contact ID], c.[Supporter ID], c.Title
 	, COALESCE(c.[Tax ID],'xx') as "Tax ID"
 	, p.CloseDate, p.[Donation ID]
 	, c.[Type of Account], p.Stage
-	, CASE WHEN lower(c.[Type of Account]) = 'individual' THEN '1'
+	, CASE WHEN LEFT(c.[Tax ID], 1) = '0' THEN '2'
+		WHEN lower(c.[Type of Account]) = 'individual' THEN '1'
         WHEN lower(c.[Type of Account]) = 'organization' THEN '2'
         ELSE 'ERROR' END AS type_acc_id
 	, p.total_donation_amount
 from prep p
 LEFT JOIN sfs.vw_contact c
     ON p.contact_key = c.[CRM Contact ID]
+	;
 	;
 """)
 
