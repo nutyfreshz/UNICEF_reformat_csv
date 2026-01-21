@@ -168,8 +168,8 @@ if uploaded_file is not None:
 
     # Text box (Enter needed to activate)
     st.badge("Example file naming")
-    st.code("inputDonatefile-yyyymmdd")
-    st.badge("inputDonatefile-25681204", icon=":material/check:", color="green")
+    st.code("InputDonateFile-yyyymmdd")
+    st.badge("InputDonateFile-25681204", icon=":material/check:", color="green")
     op_names = st.text_input(
         "Enter output file name",
         placeholder="my_output",
