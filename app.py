@@ -20,6 +20,8 @@ WITH prep as
 FROM sfs.vw_opportunity o
 WHERE YEAR(o.[Close Date]) >= YEAR(GETDATE())
 	AND MONTH(o.[Close Date]) >= MONTH(GETDATE())
+	AND DAY(o.[Close Date]) <= 16
+    AND o.[Payment Method] <> 'QR code'
     AND (LOWER(o.Stage) = 'closed won'
 		OR LOWER(o.Stage) like '%refund%')
 GROUP BY 
