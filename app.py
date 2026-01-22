@@ -178,7 +178,7 @@ if uploaded_file is not None:
 						, 'total_donation_amount': 'มูลค่าเงินสด'
 						, 'Donation ID': 'DONATION_ID'
 				})
-    
+    df.loc[df['ประเภทผู้บริจาค'] == 2, ['คำนำหน้าชื่อ', 'ชื่อ', 'นามสกุล']] = np.nan
     df_rev = df[['วันที่รับบริจาค','ประเภทผู้บริจาค','เลขประจำตัวผู้เสียภาษีอากร','คำนำหน้าชื่อ','ชื่อ','นามสกุล','ชื่อนิติบุคคล','มูลค่าเงินสด','รายการทรัพย์สิน','มูลค่าทรัพย์สิน','DONATION_ID','Stage','Supporter ID','firstname_owner','lastname_owner','Pledge ID','Payment Method','Payment Gateway','id_validate','retro']]
 
     mask = (
