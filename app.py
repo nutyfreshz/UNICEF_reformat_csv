@@ -52,11 +52,11 @@ select c.[CRM Contact ID], c.[Supporter ID], c.Title
         ELSE 'ERROR' END AS type_acc_id
 	, p.total_donation_amount
 	, c.[Supporter ID]		/*For finance recinciliation*/
-	, p.[Payment Method]		/*For finance recinciliation*/
-	, p.[Payment Gateway]		/*For finance recinciliation*/
-	, p.[Pledge ID]		/*For finance recinciliation*/
-	, own.[First Name] AS firstname_owner		/*For finance recinciliation*/
-	, own.[Last Name] AS lastname_owner		/*For finance recinciliation*/
+	, p.[Payment Method]		/*For finance reconciliation*/
+	, p.[Payment Gateway]		/*For finance reconciliation*/
+	, p.[Pledge ID]		/*For finance reconciliation*/
+	, own.[First Name] AS firstname_owner		/*For finance reconciliation*/
+	, own.[Last Name] AS lastname_owner		/*For finance reconciliation*/
 	, CASE
 		WHEN LEN(c.[Tax ID]) <> 13
 		OR c.[Tax ID] LIKE '%[^0-9]%' 
