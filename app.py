@@ -26,8 +26,10 @@ FROM sfs.vw_opportunity o
 WHERE 1=1
 	AND o.[Close Date] BETWEEN DATEFROMPARTS(YEAR(GETDATE()), 1, 1) AND DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 16)
     AND o.[Payment Method] <> 'QR code'
-    AND (LOWER(o.Stage) = 'closed won'
-		OR LOWER(o.Stage) like '%refund%')
+    AND (
+		LOWER(o.Stage) = 'closed won'
+		--OR LOWER(o.Stage) like '%refund%'
+		)
 GROUP BY 
 	CASE WHEN o.[On Behalf Of] is null then o.[CRM Contact ID]
          WHEN o.[On Behalf Of] is not null then o.[On Behalf Of]
