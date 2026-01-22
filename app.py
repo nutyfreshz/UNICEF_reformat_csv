@@ -16,11 +16,13 @@ WITH prep as
     FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
     o.[Donation ID],
 	o.Stage,
+	o.[Payment Method],
+	o.[Payment Gateway],
+	o.[Close Date] AS date_retro,
     SUM(o.Amount) AS total_donation_amount
 FROM sfs.vw_opportunity o
-WHERE YEAR(o.[Close Date]) >= YEAR(GETDATE())
-	AND MONTH(o.[Close Date]) >= MONTH(GETDATE())
-	AND DAY(o.[Close Date]) <= 16
+WHERE 1=1
+	AND o.[Close Date] BETWEEN DATEFROMPARTS(YEAR(GETDATE()), 1, 1) AND DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 16)
     AND o.[Payment Method] <> 'QR code'
     AND (LOWER(o.Stage) = 'closed won'
 		OR LOWER(o.Stage) like '%refund%')
@@ -30,7 +32,9 @@ GROUP BY
 		 ELSE o.[CRM Contact ID] END,
     o.[Close Date], 
     o.[Donation ID],
-    o.Stage
+	o.Stage,
+	o.[Payment Method],
+	o.[Payment Gateway]
 )	
 
 select c.[CRM Contact ID], c.[Supporter ID], c.Title
@@ -43,6 +47,40 @@ select c.[CRM Contact ID], c.[Supporter ID], c.Title
         WHEN lower(c.[Type of Account]) = 'organization' THEN '2'
         ELSE 'ERROR' END AS type_acc_id
 	, p.total_donation_amount
+	, c.[Supporter ID]
+	, p.[Payment Method]
+	, p.[Payment Gateway]
+	, CASE
+		WHEN LEN(c.[Tax ID]) <> 13
+		OR c.[Tax ID] LIKE '%[^0-9]%'
+		THEN 'INVALID'
+		WHEN
+		(
+		(
+		11 - (
+			(
+			SUBSTRING(c.[Tax ID],1,1) * 13 +
+			SUBSTRING(c.[Tax ID],2,1) * 12 +
+			SUBSTRING(c.[Tax ID],3,1) * 11 +
+			SUBSTRING(c.[Tax ID],4,1) * 10 +
+			SUBSTRING(c.[Tax ID],5,1) * 9  +
+			SUBSTRING(c.[Tax ID],6,1) * 8  +
+			SUBSTRING(c.[Tax ID],7,1) * 7  +
+			SUBSTRING(c.[Tax ID],8,1) * 6  +
+			SUBSTRING(c.[Tax ID],9,1) * 5  +
+			SUBSTRING(c.[Tax ID],10,1) * 4 +
+			SUBSTRING(c.[Tax ID],11,1) * 3 +
+			SUBSTRING(c.[Tax ID],12,1) * 2
+			) % 11
+			)
+		) % 10
+		) = CAST(SUBSTRING(c.[Tax ID],13,1) AS INT)
+		THEN 'VALID'
+		ELSE 'INVALID'
+		END AS id_validate
+		, CASE WHEN MONTH(p.date_retro) = MONTH(GETDATE()) THEN 'CURRENT'
+			WHEN MONTH(p.date_retro) <> MONTH(GETDATE()) THEN 'RETRO'
+			ELSE 'ERROR' END AS retro
 from prep p
 LEFT JOIN sfs.vw_contact c
     ON p.contact_key = c.[CRM Contact ID]
