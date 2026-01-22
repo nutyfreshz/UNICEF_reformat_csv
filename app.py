@@ -19,6 +19,7 @@ WITH prep as
 	o.[Payment Method],
 	o.[Payment Gateway],
 	o.[Close Date] AS date_retro,
+	o.[Pledge ID],
     SUM(o.Amount) AS total_donation_amount
 FROM sfs.vw_opportunity o
 WHERE 1=1
@@ -34,7 +35,8 @@ GROUP BY
     o.[Donation ID],
 	o.Stage,
 	o.[Payment Method],
-	o.[Payment Gateway]
+	o.[Payment Gateway],
+	o.[Pledge ID]
 )	
 
 select c.[CRM Contact ID], c.[Supporter ID], c.Title
@@ -50,9 +52,11 @@ select c.[CRM Contact ID], c.[Supporter ID], c.Title
 	, c.[Supporter ID]
 	, p.[Payment Method]
 	, p.[Payment Gateway]
+	, p.[Pledge ID]
 	, CASE
 		WHEN LEN(c.[Tax ID]) <> 13
-		OR c.[Tax ID] LIKE '%[^0-9]%' OR (LEFT(c.[Tax ID], 1) = '0' AND c.[First Name] is not null)
+		OR c.[Tax ID] LIKE '%[^0-9]%' 
+		--OR (LEFT(c.[Tax ID], 1) = '0' AND c.[First Name] is not null)
 		THEN 'INVALID'
 		WHEN
 		(
