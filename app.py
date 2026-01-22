@@ -175,7 +175,7 @@ if uploaded_file is not None:
 						, 'Donation ID': 'DONATION_ID'
 				})
     
-    df_rev = df[['วันที่รับบริจาค','ประเภทผู้บริจาค','เลขประจำตัวผู้เสียภาษีอากร','คำนำหน้าชื่อ','ชื่อ','นามสกุล','ชื่อนิติบุคคล','มูลค่าเงินสด','รายการทรัพย์สิน','มูลค่าทรัพย์สิน','DONATION_ID','Stage','Supporter ID','Payment Method','Payment Gateway','id_validate','retro']]
+    df_rev = df[['วันที่รับบริจาค','ประเภทผู้บริจาค','เลขประจำตัวผู้เสียภาษีอากร','คำนำหน้าชื่อ','ชื่อ','นามสกุล','ชื่อนิติบุคคล','มูลค่าเงินสด','รายการทรัพย์สิน','มูลค่าทรัพย์สิน','DONATION_ID','Stage','Supporter ID','Pledge ID','Payment Method','Payment Gateway','id_validate','retro']]
 
     mask = (
     df_rev['เลขประจำตัวผู้เสียภาษีอากร'].isna() |
