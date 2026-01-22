@@ -12,7 +12,7 @@ WITH prep as
 (SELECT 
     CASE WHEN o.[On Behalf Of] is null then o.[CRM Contact ID]
          WHEN o.[On Behalf Of] is not null then o.[On Behalf Of]
-		 ELSE o.[CRM Contact ID] END as contact_key, /*DOBO rules can't use contact_id directly*/
+		 ELSE o.[CRM Contact ID] END as contact_key, /*DOBO condition can't use contact_id directly*/
     FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
     o.[Donation ID],
 	o.Stage,
@@ -20,6 +20,7 @@ WITH prep as
 	o.[Payment Gateway],
 	o.[Close Date] AS date_retro,
 	o.[Pledge ID],
+	o.[CRM Contact ID],
     SUM(o.Amount) AS total_donation_amount
 FROM sfs.vw_opportunity o
 WHERE 1=1
@@ -36,6 +37,7 @@ GROUP BY
 	o.Stage,
 	o.[Payment Method],
 	o.[Payment Gateway],
+	o.[CRM Contact ID],
 	o.[Pledge ID]
 )	
 
@@ -44,19 +46,21 @@ select c.[CRM Contact ID], c.[Supporter ID], c.Title
 	, COALESCE(c.[Tax ID],'xx') as "Tax ID"
 	, p.CloseDate, p.[Donation ID]
 	, c.[Type of Account], p.Stage
-	, CASE WHEN LEFT(c.[Tax ID], 1) = '0' AND c.[First Name] is null THEN '2'
-		WHEN lower(c.[Type of Account]) = 'individual' THEN '1'
-        WHEN lower(c.[Type of Account]) = 'organization' THEN '2'
+	, CASE WHEN LEFT(c.[Tax ID], 1) = '0' AND c.[First Name] is null THEN '2'	/*Temp condition for 'organization'*/
+		WHEN lower(c.[Type of Account]) = 'individual' THEN '1'		/*If data input correct, use this*/
+        WHEN lower(c.[Type of Account]) = 'organization' THEN '2'	/*If data input correct, use this*/
         ELSE 'ERROR' END AS type_acc_id
 	, p.total_donation_amount
-	, c.[Supporter ID]
-	, p.[Payment Method]
-	, p.[Payment Gateway]
-	, p.[Pledge ID]
+	, c.[Supporter ID]		/*For finance recinciliation*/
+	, p.[Payment Method]		/*For finance recinciliation*/
+	, p.[Payment Gateway]		/*For finance recinciliation*/
+	, p.[Pledge ID]		/*For finance recinciliation*/
+	, own.[First Name] AS firstname_owner		/*For finance recinciliation*/
+	, own.[Last Name] AS lastname_owner		/*For finance recinciliation*/
 	, CASE
 		WHEN LEN(c.[Tax ID]) <> 13
 		OR c.[Tax ID] LIKE '%[^0-9]%' 
-		--OR (LEFT(c.[Tax ID], 1) = '0' AND c.[First Name] is not null)
+		--OR (LEFT(c.[Tax ID], 1) = '0' AND c.[First Name] is not null)		/*If agree, use this*/
 		THEN 'INVALID'
 		WHEN
 		(
@@ -88,6 +92,8 @@ select c.[CRM Contact ID], c.[Supporter ID], c.Title
 from prep p
 LEFT JOIN sfs.vw_contact c
     ON p.contact_key = c.[CRM Contact ID]
+LEFT JOIN sfs.vw_contact own
+    ON p.[CRM Contact ID] = own.[CRM Contact ID]
 	;
 """)
 
