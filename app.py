@@ -52,7 +52,7 @@ select c.[CRM Contact ID], c.[Supporter ID], c.Title
 	, p.[Payment Gateway]
 	, CASE
 		WHEN LEN(c.[Tax ID]) <> 13
-		OR c.[Tax ID] LIKE '%[^0-9]%'
+		OR c.[Tax ID] LIKE '%[^0-9]%' OR (LEFT(c.[Tax ID], 1) = '0' AND lower(c.[Type of Account]) = 'individual')
 		THEN 'INVALID'
 		WHEN
 		(
