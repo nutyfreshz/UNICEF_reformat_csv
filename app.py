@@ -51,7 +51,7 @@ select c.[CRM Contact ID], c.[Supporter ID], c.Title
         WHEN lower(c.[Type of Account]) = 'organization' THEN '2'	/*If data input correct, use this*/
         ELSE 'ERROR' END AS type_acc_id
 	, p.total_donation_amount
-	, c.[Supporter ID]		/*For finance recinciliation*/
+	, c.[Supporter ID]		/*For finance reconciliation*/
 	, p.[Payment Method]		/*For finance reconciliation*/
 	, p.[Payment Gateway]		/*For finance reconciliation*/
 	, p.[Pledge ID]		/*For finance reconciliation*/
