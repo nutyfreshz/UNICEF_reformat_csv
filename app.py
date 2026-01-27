@@ -21,6 +21,7 @@ WITH prep as
 	o.[Close Date] AS date_retro,
 	o.[Pledge ID],
 	o.[CRM Contact ID],
+	o.[Donation Type],
     SUM(o.Amount) AS total_donation_amount
 FROM sfs.vw_opportunity o
 WHERE 1=1
@@ -40,6 +41,7 @@ GROUP BY
 	o.[Payment Method],
 	o.[Payment Gateway],
 	o.[CRM Contact ID],
+	o.[Donation Type],
 	o.[Pledge ID]
 )	
 
@@ -57,6 +59,7 @@ select c.[CRM Contact ID], c.[Supporter ID], c.Title
 	, p.[Payment Method]		/*For finance reconciliation*/
 	, p.[Payment Gateway]		/*For finance reconciliation*/
 	, p.[Pledge ID]		/*For finance reconciliation*/
+	, p.[Donation Type]
 	, own.[First Name] AS firstname_owner		/*For finance reconciliation*/
 	, own.[Last Name] AS lastname_owner		/*For finance reconciliation*/
 	, CASE
