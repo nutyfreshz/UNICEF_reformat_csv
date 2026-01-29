@@ -10,9 +10,12 @@ SQL: For query input data in Data Warehouse
 ```sql
 WITH prep as
 (SELECT 
-    CASE WHEN o.[On Behalf Of] is null then o.[CRM Contact ID]
+    /*CASE WHEN o.[On Behalf Of] is null then o.[CRM Contact ID]
          WHEN o.[On Behalf Of] is not null then o.[On Behalf Of]
-		 ELSE o.[CRM Contact ID] END as contact_key, /*DOBO condition can't use contact_id directly*/
+		 ELSE o.[CRM Contact ID] END as contact_key,*/ 
+	CASE WHEN o.[Donation Type] = 'Pledge Donation' AND p.[On Behalf Of] is null THEN p.[CRM Contact ID]
+		 WHEN o.[Donation Type] = 'Pledge Donation' AND p.[On Behalf Of] is not null THEN p.[On Behalf Of]
+		 ELSE o.[CRM Contact ID] END as contact_key, /*DOBO condition can't use contact_id directly & On behalf in Opportunity was bugged(Pledge!)*/
     FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
     o.[Donation ID],
 	o.Stage,
@@ -24,6 +27,8 @@ WITH prep as
 	o.[Donation Type],
     SUM(o.Amount) AS total_donation_amount
 FROM sfs.vw_opportunity o
+LEFT JOIN sfs.vw_pledge p
+	ON o.[Pledge ID]= p.[Pledge ID]
 WHERE 1=1
 	AND o.[Close Date] BETWEEN DATEFROMPARTS(YEAR(GETDATE()), 1, 1) AND DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 16)
     AND o.[Payment Method] <> 'QR code'
@@ -32,8 +37,8 @@ WHERE 1=1
 		--OR LOWER(o.Stage) like '%refund%'
 		)
 GROUP BY 
-	CASE WHEN o.[On Behalf Of] is null then o.[CRM Contact ID]
-         WHEN o.[On Behalf Of] is not null then o.[On Behalf Of]
+	CASE WHEN o.[Donation Type] = 'Pledge Donation' AND p.[On Behalf Of] is null THEN p.[CRM Contact ID]
+		 WHEN o.[Donation Type] = 'Pledge Donation' AND p.[On Behalf Of] is not null THEN p.[On Behalf Of]
 		 ELSE o.[CRM Contact ID] END,
     o.[Close Date], 
     o.[Donation ID],
