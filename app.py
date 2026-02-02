@@ -31,6 +31,7 @@ LEFT JOIN sfs.vw_pledge p
 	ON o.[Pledge ID]= p.[Pledge ID]
 WHERE 1=1
 	AND o.[Close Date] BETWEEN DATEFROMPARTS(YEAR(GETDATE()), 1, 1) AND DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 16)
+	--AND o.[Close Date] BETWEEN '2026-01-17' AND '2026-01-31' /*Hard code for the rest data(last month), do this before day 5 on next month*/
     AND o.[Payment Method] <> 'QR code'
     AND (
 		LOWER(o.Stage) = 'closed won'
@@ -70,7 +71,7 @@ select c.[CRM Contact ID], c.[Supporter ID], c.Title
 	, CASE
 		WHEN LEN(c.[Tax ID]) <> 13
 		OR c.[Tax ID] LIKE '%[^0-9]%' 
-		--OR (LEFT(c.[Tax ID], 1) = '0' AND c.[First Name] is not null)		/*If agree, use this*/
+		OR (LEFT(c.[Tax ID], 1) = '0' AND c.[First Name] is not null)		/*If agree, use this*/
 		THEN 'INVALID'
 		WHEN
 		(
