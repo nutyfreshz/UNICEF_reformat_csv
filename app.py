@@ -71,7 +71,7 @@ select c.[CRM Contact ID], c.[Supporter ID], c.Title
 	, CASE
 		WHEN LEN(c.[Tax ID]) <> 13
 		OR c.[Tax ID] LIKE '%[^0-9]%' 
-		OR (LEFT(c.[Tax ID], 1) = '0' AND c.[First Name] is not null)
+		OR (LEFT(c.[Tax ID], 1) = '0' AND c.[First Name] is not null AND c.[Primary Language] = 'Thai')	--thai individual input wrong as organize
 		OR (LEFT(c.[Tax ID], 3) = '099' AND c.[First Name] is null)		--exclude: foreigner id
 		THEN 'INVALID'
 		WHEN
