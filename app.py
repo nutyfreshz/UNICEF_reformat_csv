@@ -7,7 +7,8 @@ st.title("e-Donation CSV Reformatter")
 st.badge("PLEASE DON'T OPEN CSV FILE WITH EXCEL FROM DATA WAREHOUSE", icon=":material/check:", color="red")
 st.markdown("""
 SQL: For query input data in Data Warehouse
-```sqlWITH prep as
+```sql
+WITH prep as
 (SELECT 
     /*CASE WHEN o.[On Behalf Of] is null then o.[CRM Contact ID]
          WHEN o.[On Behalf Of] is not null then o.[On Behalf Of]
