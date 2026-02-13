@@ -7,8 +7,7 @@ st.title("e-Donation CSV Reformatter")
 st.badge("PLEASE DON'T OPEN CSV FILE WITH EXCEL FROM DATA WAREHOUSE", icon=":material/check:", color="red")
 st.markdown("""
 SQL: For query input data in Data Warehouse
-```sql
-WITH prep as
+```sqlWITH prep as
 (SELECT 
     /*CASE WHEN o.[On Behalf Of] is null then o.[CRM Contact ID]
          WHEN o.[On Behalf Of] is not null then o.[On Behalf Of]
@@ -30,8 +29,8 @@ FROM sfs.vw_opportunity o
 LEFT JOIN sfs.vw_pledge p
 	ON o.[Pledge ID]= p.[Pledge ID]
 WHERE 1=1
-	AND o.[Close Date] BETWEEN DATEFROMPARTS(YEAR(GETDATE()), 1, 1) AND DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 16)
-	--AND o.[Close Date] BETWEEN '2026-01-17' AND '2026-01-31' /*Hard code for the rest data(last month), do this before day 5 on next month*/
+--	AND o.[Close Date] BETWEEN DATEFROMPARTS(YEAR(GETDATE()), 1, 1) AND DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 16)	--Dynamic code
+	AND o.[Close Date] BETWEEN '2026-01-01' AND '2026-01-31' /*Hard code for the rest data(last month), do this before day 5 on next month*/
     AND o.[Payment Method] <> 'QR code'
     AND (
 		LOWER(o.Stage) = 'closed won'
@@ -71,7 +70,8 @@ select c.[CRM Contact ID], c.[Supporter ID], c.Title
 	, CASE
 		WHEN LEN(c.[Tax ID]) <> 13
 		OR c.[Tax ID] LIKE '%[^0-9]%' 
-		OR (LEFT(c.[Tax ID], 1) = '0' AND c.[First Name] is not null)		/*If agree, use this*/
+		OR (LEFT(c.[Tax ID], 1) = '0' AND c.[First Name] is not null)
+		OR (LEFT(c.[Tax ID], 3) = '099' AND c.[First Name] is null)		--exclude: foreigner id
 		THEN 'INVALID'
 		WHEN
 		(
