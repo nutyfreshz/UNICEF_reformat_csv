@@ -98,6 +98,35 @@ select c.[CRM Contact ID], c.[Supporter ID], c.Title
 		THEN 'VALID'
 		ELSE 'INVALID'
 		END AS id_validate
+		, CASE
+		WHEN LEN(c.[Tax ID]) <> 13 THEN 'wrong_digit'
+		WHEN c.[Tax ID] LIKE '%[^0-9]%' THEN 'wrong_text'
+		WHEN (LEFT(c.[Tax ID], 1) = '0' AND c.[First Name] is not null AND c.[Primary Language] = 'Thai') THEN 'wrong_th_individual_organize'	--thai individual input wrong as organize
+		WHEN (LEFT(c.[Tax ID], 3) = '099' AND c.[First Name] is null) THEN 'wrong_foreigner_fill'		--exclude: foreigner id
+		WHEN
+		(
+		(
+		11 - (
+			(
+			SUBSTRING(c.[Tax ID],1,1) * 13 +
+			SUBSTRING(c.[Tax ID],2,1) * 12 +
+			SUBSTRING(c.[Tax ID],3,1) * 11 +
+			SUBSTRING(c.[Tax ID],4,1) * 10 +
+			SUBSTRING(c.[Tax ID],5,1) * 9  +
+			SUBSTRING(c.[Tax ID],6,1) * 8  +
+			SUBSTRING(c.[Tax ID],7,1) * 7  +
+			SUBSTRING(c.[Tax ID],8,1) * 6  +
+			SUBSTRING(c.[Tax ID],9,1) * 5  +
+			SUBSTRING(c.[Tax ID],10,1) * 4 +
+			SUBSTRING(c.[Tax ID],11,1) * 3 +
+			SUBSTRING(c.[Tax ID],12,1) * 2
+			) % 11
+			)
+		) % 10
+		) = CAST(SUBSTRING(c.[Tax ID],13,1) AS INT)
+		THEN 'id_valid'
+		ELSE 'wrong_id'
+		END AS validate_reason
 		, CASE WHEN MONTH(p.date_retro) = MONTH(GETDATE()) THEN 'CURRENT'
 			WHEN MONTH(p.date_retro) <> MONTH(GETDATE()) THEN 'RETRO'
 			ELSE 'ERROR' END AS retro
@@ -166,7 +195,7 @@ if uploaded_file is not None:
 						, 'Donation ID': 'DONATION_ID'
 				})
     df.loc[df['ประเภทผู้บริจาค'] == 2, ['คำนำหน้าชื่อ', 'ชื่อ', 'นามสกุล']] = np.nan
-    df_rev = df[['วันที่รับบริจาค','ประเภทผู้บริจาค','เลขประจำตัวผู้เสียภาษีอากร','คำนำหน้าชื่อ','ชื่อ','นามสกุล','ชื่อนิติบุคคล','มูลค่าเงินสด','รายการทรัพย์สิน','มูลค่าทรัพย์สิน','DONATION_ID','Stage','Supporter ID','firstname_owner','lastname_owner','Pledge ID','Donation Type','Payment Method','Payment Gateway','id_validate','retro']]
+    df_rev = df[['วันที่รับบริจาค','ประเภทผู้บริจาค','เลขประจำตัวผู้เสียภาษีอากร','คำนำหน้าชื่อ','ชื่อ','นามสกุล','ชื่อนิติบุคคล','มูลค่าเงินสด','รายการทรัพย์สิน','มูลค่าทรัพย์สิน','DONATION_ID','Stage','Supporter ID','firstname_owner','lastname_owner','Pledge ID','Donation Type','Payment Method','Payment Gateway','id_validate','validate_reason','retro']]
 
     mask = (
     df_rev['เลขประจำตัวผู้เสียภาษีอากร'].isna() |
