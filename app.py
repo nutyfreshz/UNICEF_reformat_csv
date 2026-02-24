@@ -25,6 +25,7 @@ WITH prep as
 	o.[Pledge ID],
 	o.[CRM Contact ID],
 	o.[Donation Type],
+	o.Pledge,
     SUM(o.Amount) AS total_donation_amount
 FROM sfs.vw_opportunity o
 LEFT JOIN sfs.vw_pledge p
@@ -48,10 +49,11 @@ GROUP BY
 	o.[Payment Gateway],
 	o.[CRM Contact ID],
 	o.[Donation Type],
-	o.[Pledge ID]
+	o.[Pledge ID],
+	o.Pledge
 )	
-
-select c.[CRM Contact ID], c.[Supporter ID], c.Title
+/*Create Case in SF >> Calling list in Genesys*/
+select  c.[Supporter ID], c.Title
     , c.[First Name], c.[Last Name]
 	, COALESCE(c.[Tax ID],'xx') as "Tax ID"
 	, p.CloseDate, p.[Donation ID]
@@ -97,7 +99,7 @@ select c.[CRM Contact ID], c.[Supporter ID], c.Title
 		) = CAST(SUBSTRING(c.[Tax ID],13,1) AS INT)
 		THEN 'VALID'
 		ELSE 'INVALID'
-		END AS id_validate
+		END AS id_validate	--For Finance team select Valid
 		, CASE
 		WHEN LEN(c.[Tax ID]) <> 13 THEN 'wrong_digit'
 		WHEN c.[Tax ID] LIKE '%[^0-9]%' THEN 'wrong_text'
@@ -126,10 +128,13 @@ select c.[CRM Contact ID], c.[Supporter ID], c.Title
 		) = CAST(SUBSTRING(c.[Tax ID],13,1) AS INT)
 		THEN 'id_valid'
 		ELSE 'wrong_id'
-		END AS validate_reason
+		END AS validate_reason		--For Donor service team fix TaxID as tier1 in Genesys calling list
 		, CASE WHEN MONTH(p.date_retro) = MONTH(GETDATE()) THEN 'CURRENT'
 			WHEN MONTH(p.date_retro) <> MONTH(GETDATE()) THEN 'RETRO'
 			ELSE 'ERROR' END AS retro
+		, c.[CRM Contact ID]	--For create case in SF
+		, p.Pledge		--For create case in SF
+		, c.[Mobile Phone]		--For Genesys calling list
 from prep p
 LEFT JOIN sfs.vw_contact c
     ON p.contact_key = c.[CRM Contact ID]
