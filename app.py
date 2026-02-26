@@ -15,6 +15,7 @@ WITH prep as
 		 ELSE o.[CRM Contact ID] END as contact_key,*/ 
 	CASE WHEN o.[Donation Type] = 'Pledge Donation' AND p.[On Behalf Of] is null THEN p.[CRM Contact ID]
 		 WHEN o.[Donation Type] = 'Pledge Donation' AND p.[On Behalf Of] is not null THEN p.[On Behalf Of]
+		 WHEN o.[Donation Type] = 'One-Off Donation' AND o.[On Behalf Of] is not null THEN o.[On Behalf Of]
 		 ELSE o.[CRM Contact ID] END as contact_key, /*DOBO condition can't use contact_id directly & On behalf in Opportunity was bugged(Pledge!)*/
     FORMAT(o.[Close Date],'dd/MM/yyyy') AS CloseDate, 
     o.[Donation ID],
