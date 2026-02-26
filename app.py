@@ -33,7 +33,7 @@ LEFT JOIN sfs.vw_pledge p
 	ON o.[Pledge ID]= p.[Pledge ID]
 WHERE 1=1
 --	AND o.[Close Date] BETWEEN DATEFROMPARTS(YEAR(GETDATE()), 1, 1) AND DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 16)	--Dynamic code
-	AND o.[Close Date] BETWEEN '2026-01-01' AND '2026-01-31' /*Hard code for the rest data(last month), do this before day 5 on next month*/
+	AND o.[Close Date] BETWEEN '2026-02-01' AND '2026-02-17' /*Hard code for the rest data(last month), do this before day 5 on next month*/
     AND o.[Payment Method] <> 'QR code'
     AND (
 		LOWER(o.Stage) = 'closed won'
@@ -42,6 +42,7 @@ WHERE 1=1
 GROUP BY 
 	CASE WHEN o.[Donation Type] = 'Pledge Donation' AND p.[On Behalf Of] is null THEN p.[CRM Contact ID]
 		 WHEN o.[Donation Type] = 'Pledge Donation' AND p.[On Behalf Of] is not null THEN p.[On Behalf Of]
+		 WHEN o.[Donation Type] = 'One-Off Donation' AND o.[On Behalf Of] is not null THEN o.[On Behalf Of]
 		 ELSE o.[CRM Contact ID] END,
     o.[Close Date], 
     o.[Donation ID],
@@ -141,7 +142,8 @@ LEFT JOIN sfs.vw_contact c
     ON p.contact_key = c.[CRM Contact ID]
 LEFT JOIN sfs.vw_contact own
     ON p.[CRM Contact ID] = own.[CRM Contact ID]
-	;
+WHERE 1=1
+;
 """)
 
 # Track last uploaded file name
