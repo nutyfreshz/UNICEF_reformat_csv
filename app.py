@@ -77,6 +77,7 @@ select  c.[Supporter ID], c.Title
 		OR c.[Tax ID] LIKE '%[^0-9]%' 
 		OR (LEFT(c.[Tax ID], 1) = '0' AND c.[First Name] is not null AND c.[Primary Language] = 'Thai')	--thai individual input wrong as organize
 		OR (LEFT(c.[Tax ID], 3) = '099' AND c.[First Name] is null)		--exclude: foreigner id
+		OR (LEFT(c.[Tax ID], 1) <> '0' AND c.[First Name] is null)
 		THEN 'INVALID'
 		WHEN
 		(
@@ -105,8 +106,9 @@ select  c.[Supporter ID], c.Title
 		, CASE
 		WHEN LEN(c.[Tax ID]) <> 13 THEN 'wrong_digit'
 		WHEN c.[Tax ID] LIKE '%[^0-9]%' THEN 'wrong_text'
-		WHEN (LEFT(c.[Tax ID], 1) = '0' AND c.[First Name] is not null AND c.[Primary Language] = 'Thai') THEN 'wrong_th_individual_organize'	--thai individual input wrong as organize
+		WHEN (LEFT(c.[Tax ID], 1) = '0' AND c.[First Name] is not null AND c.[Primary Language] = 'Thai') THEN 'wrong_fill_organize_but_th_individual'	--thai individual input wrong as organize
 		WHEN (LEFT(c.[Tax ID], 3) = '099' AND c.[First Name] is null) THEN 'wrong_foreigner_fill'		--exclude: foreigner id
+		WHEN (LEFT(c.[Tax ID], 1) <> '0' AND c.[First Name] is null) THEN 'wrong_fill_th_indivual_but_organize'
 		WHEN
 		(
 		(
@@ -143,6 +145,7 @@ LEFT JOIN sfs.vw_contact c
 LEFT JOIN sfs.vw_contact own
     ON p.[CRM Contact ID] = own.[CRM Contact ID]
 WHERE 1=1
+	AND [Donation ID] = 'D14511373E1'
 ;
 """)
 
